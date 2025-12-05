@@ -13,7 +13,7 @@
       background: #f4f4f5;
     }
     .app {
-      max-width: 800px;
+      max-width: 960px;
       margin: 0 auto;
       background: #fff;
       border-radius: 16px;
@@ -52,16 +52,16 @@
       font-size: 14px;
     }
     input[type="number"] {
-      width: 120px;
+      width: 100px;
     }
-    input[type="time"], input[type="date"] {
+    input[type="time"], input[type="date"], input[type="month"] {
       width: 150px;
     }
     button {
       border-radius: 999px;
       border: none;
-      padding: 8px 14px;
-      font-size: 14px;
+      padding: 6px 12px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
     }
@@ -87,6 +87,7 @@
       border-bottom: 1px solid #e5e7eb;
       padding: 6px 4px;
       text-align: left;
+      vertical-align: top;
     }
     th {
       background: #f9fafb;
@@ -117,6 +118,8 @@
       justify-content: space-between;
       margin-top: 8px;
       font-size: 14px;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     .hint {
       font-size: 12px;
@@ -128,13 +131,99 @@
       color: #4b5563;
       white-space: pre-wrap;
     }
+    .btn-small {
+      padding: 4px 8px;
+      font-size: 12px;
+    }
+
+    .multiplier-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 6px 12px;
+      margin-top: 4px;
+    }
+    .multiplier-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+    }
+    .multiplier-item input[type="number"] {
+      width: 64px;
+    }
+
+    .bulk-mode-toggle {
+      display: flex;
+      gap: 12px;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-top: 6px;
+      font-size: 12px;
+    }
+    .calendar-day-header {
+      font-weight: 600;
+      text-align: center;
+    }
+    .calendar-day {
+      text-align: center;
+      padding: 4px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      user-select: none;
+    }
+    .calendar-day.selected {
+      background: #0d6efd;
+      color: #fff;
+      border-color: #0d6efd;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+    .modal-backdrop.show {
+      display: flex;
+    }
+    .modal {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      width: 320px;
+      max-width: 90vw;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+    }
+    .modal header {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .modal .field-row {
+      margin-bottom: 10px;
+    }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+    }
   </style>
 </head>
 <body>
   <div class="app">
     <h1>加班費計算器（Web 版）</h1>
 
-    <!-- 基本設定 -->
     <div class="section">
       <h2>基本設定</h2>
 
@@ -165,9 +254,33 @@
         <label for="breakEnd">結束</label>
         <input id="breakEnd" type="time" value="13:00" />
       </div>
+
+      <div class="hint">
+        ※ 加班費計算倍率（可調整，會影響後續新增/編輯的紀錄）：
+      </div>
+      <div class="multiplier-group">
+        <div class="multiplier-item">
+          <span>假日 1～8 小時</span>
+          <input id="adj100" type="number" step="0.01" value="1.00" />
+        </div>
+        <div class="multiplier-item">
+          <span>平日前 2 小時／休息日前 2 小時／假日第 9～10 小時</span>
+          <input id="adj134" type="number" step="0.01" value="1.34" />
+        </div>
+        <div class="multiplier-item">
+          <span>平日超過 2 小時／休息日後 6 小時／假日第 11 小時起</span>
+          <input id="adj167" type="number" step="0.01" value="1.67" />
+        </div>
+        <div class="multiplier-item">
+          <span>休息日超過 8 小時</span>
+          <input id="adj267" type="number" step="0.01" value="2.67" />
+        </div>
+      </div>
+      <div class="hint">
+        上列說明是依照你 Swift OvertimeCore 裡的註解：可視公司規則自行微調倍率數字。
+      </div>
     </div>
 
-    <!-- 新增加班 -->
     <div class="section">
       <h2>新增加班時段</h2>
       <div class="field-row">
@@ -185,11 +298,54 @@
         <button id="btnAdd" class="btn-primary">新增紀錄</button>
       </div>
       <div class="hint">
-        ※ 跨日加班（例如 23:00 ~ 02:00）會自動視為隔日結束，邏輯與 iOS 版本相同。
+        ※ 單筆新增：使用上方日期與時間。跨日加班（例如 23:00 ~ 02:00）會自動視為隔日結束。
       </div>
     </div>
 
-    <!-- 加班紀錄 -->
+    <div class="section">
+      <h2>批量新增加班</h2>
+
+      <div class="bulk-mode-toggle">
+        <label><input type="radio" name="bulkMode" value="range" checked /> 日期區間</label>
+        <label><input type="radio" name="bulkMode" value="pick" /> 勾選日期</label>
+      </div>
+
+      <div id="bulkRangePanel">
+        <div class="field-row">
+          <label for="bulkStartDate">起始日期：</label>
+          <input id="bulkStartDate" type="date" />
+          <label for="bulkEndDate">結束日期：</label>
+          <input id="bulkEndDate" type="date" />
+        </div>
+      </div>
+
+      <div id="bulkPickPanel" style="display:none;">
+        <div class="field-row">
+          <label for="bulkMonth">選擇月份：</label>
+          <input id="bulkMonth" type="month" />
+        </div>
+        <div class="calendar" id="pickCalendar"></div>
+        <div class="hint">
+          點選日期可勾選/取消；僅會套用本月份中有效日期。
+        </div>
+      </div>
+
+      <div class="field-row" style="margin-top:6px;">
+        <label for="bulkStartTime">開始時間：</label>
+        <input id="bulkStartTime" type="time" value="17:30" />
+        <label for="bulkEndTime">結束時間：</label>
+        <input id="bulkEndTime" type="time" value="19:30" />
+      </div>
+      <div class="field-row">
+        <button id="btnBulkAdd" class="btn-secondary">批量新增</button>
+      </div>
+      <div class="hint">
+        ※ 日期區間模式：對【起始日期 ~ 結束日期】每一天建立一筆。<br />
+        ※ 勾選日期模式：只對勾選的日期新增。<br />
+        ※ 若某一天與既有紀錄重疊或有錯誤，該天會略過並在訊息中顯示。
+      </div>
+    </div>
+
     <div class="section">
       <h2>加班紀錄</h2>
       <div id="recordsEmpty" class="hint">尚無紀錄，請先新增。</div>
@@ -202,7 +358,7 @@
             <th class="text-right">時數</th>
             <th class="text-right">加發金額</th>
             <th>計算過程</th>
-            <th></th>
+            <th>操作</th>
           </tr>
         </thead>
         <tbody id="recordsBody"></tbody>
@@ -213,9 +369,32 @@
       </div>
       <div class="field-row" style="margin-top:8px;">
         <button id="btnDownloadCsv" class="btn-secondary">下載 CSV</button>
+        <button id="btnClearAll" class="btn-danger">刪除全部紀錄</button>
       </div>
     </div>
+  </div>
 
+  <div class="modal-backdrop" id="editModalBackdrop">
+    <div class="modal">
+      <header>編輯加班紀錄</header>
+      <div class="field-row">
+        <label for="editDate">日期：</label>
+        <input id="editDate" type="date" />
+      </div>
+      <div class="field-row">
+        <label for="editStartTime">開始：</label>
+        <input id="editStartTime" type="time" />
+      </div>
+      <div class="field-row">
+        <label for="editEndTime">結束：</label>
+        <input id="editEndTime" type="time" />
+      </div>
+      <div class="hint" id="editHint"></div>
+      <div class="modal-footer">
+        <button id="btnEditCancel" class="btn-secondary btn-small">取消</button>
+        <button id="btnEditSave" class="btn-primary btn-small">儲存</button>
+      </div>
+    </div>
   </div>
 
   <script src="overtimeCore.js"></script>
