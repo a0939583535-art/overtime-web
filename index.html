@@ -46,6 +46,9 @@
       align-items: center;
       margin-bottom: 8px;
     }
+    .field-row label {
+      min-width: 64px;
+    }
     label {
       font-size: 14px;
     }
@@ -59,7 +62,7 @@
       width: 110px;
     }
     input[type="time"], input[type="date"], input[type="month"] {
-      width: 150px;
+      width: 170px;
     }
     button {
       border-radius: 999px;
@@ -160,6 +163,9 @@
       gap: 4px;
       font-size: 11px;
     }
+    .multiplier-item span {
+      flex: 1;
+    }
     .multiplier-item input[type="number"] {
       width: 64px;
       flex-shrink: 0;
@@ -249,15 +255,16 @@
         padding: 10px;
       }
       .field-row {
-        flex-direction: column;
-        align-items: flex-start;
+        flex-direction: row;
+        align-items: center;
       }
-      .field-row > label {
-        min-width: auto;
+      .field-row label {
+        min-width: 70px;
       }
-      input, select {
-        width: 100%;
-        max-width: 100%;
+      .field-row input,
+      .field-row select,
+      .field-row button {
+        flex: 1;
       }
       input[type="time"],
       input[type="date"],
@@ -265,15 +272,8 @@
       input[type="number"] {
         width: 100%;
       }
-      .field-row button {
-        width: 100%;
-        text-align: center;
-      }
       .multiplier-group {
         grid-template-columns: 1fr;
-      }
-      .multiplier-item {
-        align-items: flex-start;
       }
       .summary {
         flex-direction: column;
@@ -286,6 +286,7 @@
   <div class="app">
     <h1>加班費計算器（Web 版）</h1>
 
+    <!-- 基本設定 -->
     <div class="section">
       <h2>基本設定</h2>
 
@@ -308,10 +309,13 @@
         <input id="hourly" type="number" value="187.5" step="0.01" />
       </div>
 
+      <!-- 午休：開始一行、結束一行 -->
       <div class="field-row">
-        <label>午休：</label>
+        <label for="breakStart">午休開始：</label>
         <input id="breakStart" type="time" value="12:00" />
-        <span>—</span>
+      </div>
+      <div class="field-row">
+        <label for="breakEnd">午休結束：</label>
         <input id="breakEnd" type="time" value="13:00" />
       </div>
 
@@ -324,23 +328,24 @@
           <input id="adj100" type="number" step="0.01" value="1.00" />
         </div>
         <div class="multiplier-item">
-          <span>平日前 2 小時／休息日前 2 小時／假日第 9～10 小時</span>
+          <span>平/休前 2 小時、假日 9～10</span>
           <input id="adj134" type="number" step="0.01" value="1.34" />
         </div>
         <div class="multiplier-item">
-          <span>平日超過 2 小時／休息日後 6 小時／假日第 11 小時起</span>
+          <span>平/休延長時數、假日 11+</span>
           <input id="adj167" type="number" step="0.01" value="1.67" />
         </div>
         <div class="multiplier-item">
-          <span>休息日超過 8 小時</span>
+          <span>休息日 8 小時以上</span>
           <input id="adj267" type="number" step="0.01" value="2.67" />
         </div>
       </div>
       <div class="hint">
-        上列說明是依照你 Swift OvertimeCore 裡的註解：可視公司規則自行微調倍率數字。
+        文字是說明用，真正倍率以右側數字為準，可依公司規則修改。
       </div>
     </div>
 
+    <!-- 新增加班 -->
     <div class="section">
       <h2>新增加班時段</h2>
       <div class="field-row">
@@ -348,15 +353,19 @@
         <input id="date" type="date" />
       </div>
       <div class="field-row">
-        <label for="startTime">開始：</label>
+        <label for="startTime">開始時間：</label>
         <input id="startTime" type="time" value="17:30" />
       </div>
       <div class="field-row">
-        <label for="endTime">結束：</label>
+        <label for="endTime">結束時間：</label>
         <input id="endTime" type="time" value="19:30" />
+      </div>
+      <div class="field-row">
+        <label></label>
         <button id="btnPlus2" class="btn-secondary">結束＝開始＋2小時</button>
       </div>
       <div class="field-row">
+        <label></label>
         <button id="btnAdd" class="btn-primary">新增紀錄</button>
       </div>
       <div class="hint">
@@ -364,6 +373,7 @@
       </div>
     </div>
 
+    <!-- 批量新增加班 -->
     <div class="section">
       <h2>批量新增加班</h2>
 
@@ -372,6 +382,7 @@
         <label><input type="radio" name="bulkMode" value="pick" /> 勾選日期</label>
       </div>
 
+      <!-- 區間模式 -->
       <div id="bulkRangePanel">
         <div class="field-row">
           <label for="bulkStartDate">起始日期：</label>
@@ -383,6 +394,7 @@
         </div>
       </div>
 
+      <!-- 勾選日期模式 -->
       <div id="bulkPickPanel" style="display:none;">
         <div class="field-row">
           <label for="bulkMonth">選擇月份：</label>
@@ -403,15 +415,17 @@
         <input id="bulkEndTime" type="time" value="19:30" />
       </div>
       <div class="field-row">
+        <label></label>
         <button id="btnBulkAdd" class="btn-secondary">批量新增</button>
       </div>
       <div class="hint">
-        ※ 日期區間模式：對【起始日期 ~ 結束日期】每一天建立一筆。<br />
-        ※ 勾選日期模式：只對勾選的日期新增。<br />
+        ※ 日期區間：對【起始日期 ~ 結束日期】每一天建立一筆。<br />
+        ※ 勾選日期：只對勾選的日期新增。<br />
         ※ 若某一天與既有紀錄重疊或有錯誤，該天會略過並在訊息中顯示。
       </div>
     </div>
 
+    <!-- 加班紀錄 -->
     <div class="section">
       <h2>加班紀錄</h2>
       <div id="recordsEmpty" class="hint">尚無紀錄，請先新增。</div>
@@ -442,6 +456,7 @@
     </div>
   </div>
 
+  <!-- 編輯紀錄 modal -->
   <div class="modal-backdrop" id="editModalBackdrop">
     <div class="modal">
       <header>編輯加班紀錄</header>
@@ -450,11 +465,11 @@
         <input id="editDate" type="date" />
       </div>
       <div class="field-row">
-        <label for="editStartTime">開始：</label>
+        <label for="editStartTime">開始時間：</label>
         <input id="editStartTime" type="time" />
       </div>
       <div class="field-row">
-        <label for="editEndTime">結束：</label>
+        <label for="editEndTime">結束時間：</label>
         <input id="editEndTime" type="time" />
       </div>
       <div class="hint" id="editHint"></div>
