@@ -4,483 +4,98 @@
   <meta charset="UTF-8" />
   <title>加班費計算器（Web 版）</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#0d6efd" />
   <style>
-    :root {
-      --radius-lg: 16px;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      margin: 0;
-      padding: 12px;
-      background: #f4f4f5;
-    }
-    .app {
-      max-width: 960px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    h1 {
-      font-size: 20px;
-      margin-top: 0;
-      margin-bottom: 8px;
-      text-align: center;
-    }
-    h2 {
-      font-size: 16px;
-      margin-bottom: 8px;
-    }
-    .section {
-      margin-top: 12px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px solid #e4e4e7;
-    }
-    .field-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .field-row label {
-      min-width: 64px;
-    }
-    label {
-      font-size: 14px;
-    }
-    input, select {
-      padding: 6px 8px;
-      border-radius: 8px;
-      border: 1px solid #d4d4d8;
-      font-size: 14px;
-    }
-    input[type="number"] {
-      width: 110px;
-    }
-    input[type="time"], input[type="date"], input[type="month"] {
-      width: 170px;
-    }
-    button {
-      border-radius: 999px;
-      border: none;
-      padding: 6px 12px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .btn-primary {
-      background: #0d6efd;
-      color: #fff;
-    }
-    .btn-secondary {
-      background: #e4e4e7;
-      color: #111827;
-    }
-    .btn-danger {
-      background: #ef4444;
-      color: #fff;
-    }
-    .btn-small {
-      padding: 4px 8px;
-      font-size: 12px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      margin-top: 8px;
-      min-width: 640px;
-    }
-    th, td {
-      border-bottom: 1px solid #e5e7eb;
-      padding: 6px 4px;
-      text-align: left;
-      vertical-align: top;
-    }
-    th {
-      background: #f9fafb;
-    }
-    .table-wrapper {
-      width: 100%;
-      overflow-x: auto;
-    }
-
-    .text-right {
-      text-align: right;
-    }
-    .badge {
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      display: inline-block;
-    }
-    .badge-weekday {
-      background: #dbeafe;
-      color: #1d4ed8;
-    }
-    .badge-rest {
-      background: #fef3c7;
-      color: #92400e;
-    }
-    .badge-holiday {
-      background: #fee2e2;
-      color: #b91c1c;
-    }
-    .summary {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 8px;
-      font-size: 14px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .hint {
-      font-size: 12px;
-      color: #6b7280;
-      margin-top: 6px;
-    }
-    .breakdown {
-      font-size: 11px;
-      color: #4b5563;
-      white-space: pre-wrap;
-    }
-
-    .multiplier-group {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 6px 12px;
-      margin-top: 4px;
-    }
-    .multiplier-item {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 11px;
-    }
-    .multiplier-item span {
-      flex: 1;
-    }
-    .multiplier-item input[type="number"] {
-      width: 64px;
-      flex-shrink: 0;
-    }
-
-    .bulk-mode-toggle {
-      display: flex;
-      gap: 12px;
-      font-size: 13px;
-      margin-bottom: 6px;
-      flex-wrap: wrap;
-    }
-
-    .calendar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-      margin-top: 6px;
-      font-size: 11px;
-    }
-    .calendar-day-header {
-      font-weight: 600;
-      text-align: center;
-    }
-    .calendar-day {
-      text-align: center;
-      padding: 4px 0;
-      border-radius: 8px;
-      cursor: pointer;
-      border: 1px solid transparent;
-      user-select: none;
-    }
-    .calendar-day.selected {
-      background: #0d6efd;
-      color: #fff;
-      border-color: #0d6efd;
-    }
-
+    body { font-family: sans-serif; background:#f4f4f5; padding:12px; }
+    .app { max-width:960px; margin:auto; background:#fff; padding:16px; border-radius:12px; }
+    h1 { text-align:center; }
+    .section { border:1px solid #ddd; border-radius:8px; padding:12px; margin-top:12px; }
+    .field-row { display:flex; gap:8px; margin-bottom:8px; align-items:center; }
+    label { width:90px; }
+    input, select, button { padding:6px; }
+    table { width:100%; border-collapse:collapse; margin-top:8px; }
+    th, td { border-bottom:1px solid #ddd; padding:6px; }
+    .badge { padding:2px 8px; border-radius:999px; font-size:12px; }
+    .badge-weekday { background:#dbeafe; }
+    .badge-rest { background:#fef3c7; }
+    .badge-holiday { background:#fee2e2; }
     .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.35);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
+      position:fixed; inset:0; background:rgba(0,0,0,.4);
+      display:none; align-items:center; justify-content:center;
     }
-    .modal-backdrop.show {
-      display: flex;
-    }
-    .modal {
-      background: #fff;
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      width: 320px;
-      max-width: 92vw;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.18);
-    }
-    .modal header {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-    .modal .field-row {
-      margin-bottom: 10px;
-    }
-    .modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    /* 小螢幕優化 */
-    @media (max-width: 600px) {
-      body {
-        padding: 8px;
-      }
-      .app {
-        padding: 12px;
-        border-radius: 12px;
-      }
-      h1 {
-        font-size: 18px;
-      }
-      .section {
-        padding: 10px;
-      }
-      .field-row {
-        flex-direction: row;
-        align-items: center;
-      }
-      .field-row label {
-        min-width: 70px;
-      }
-      .field-row input,
-      .field-row select,
-      .field-row button {
-        flex: 1;
-      }
-      input[type="time"],
-      input[type="date"],
-      input[type="month"],
-      input[type="number"] {
-        width: 100%;
-      }
-      .multiplier-group {
-        grid-template-columns: 1fr;
-      }
-      .summary {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
+    .modal-backdrop.show { display:flex; }
+    .modal { background:#fff; padding:16px; border-radius:12px; width:320px; }
   </style>
 </head>
 <body>
-  <div class="app">
-    <h1>加班費計算器（Web 版）</h1>
+<div class="app">
+  <h1>加班費計算器</h1>
 
-    <!-- 基本設定 -->
-    <div class="section">
-      <h2>基本設定</h2>
-
-      <div class="field-row">
-        <label for="salaryMode">薪資制：</label>
-        <select id="salaryMode">
-          <option value="monthly">月薪制</option>
-          <option value="hourly">時薪制</option>
-        </select>
-      </div>
-
-      <div class="field-row" id="monthlyRow">
-        <label for="monthly">月薪：</label>
-        <input id="monthly" type="number" value="45000" />
-        <span id="hourlyDisplay" class="hint"></span>
-      </div>
-
-      <div class="field-row" id="hourlyRow">
-        <label for="hourly">時薪：</label>
-        <input id="hourly" type="number" value="187.5" step="0.01" />
-      </div>
-
-      <!-- 午休：開始一行、結束一行 -->
-      <div class="field-row">
-        <label for="breakStart">午休開始：</label>
-        <input id="breakStart" type="time" value="12:00" />
-      </div>
-      <div class="field-row">
-        <label for="breakEnd">午休結束：</label>
-        <input id="breakEnd" type="time" value="13:00" />
-      </div>
-
-      <div class="hint">
-        ※ 加班費計算倍率（可調整，會影響後續新增/編輯的紀錄）：
-      </div>
-      <div class="multiplier-group">
-        <div class="multiplier-item">
-          <span>假日 1～8 小時</span>
-          <input id="adj100" type="number" step="0.01" value="1.00" />
-        </div>
-        <div class="multiplier-item">
-          <span>平/休前 2 小時、假日 9～10</span>
-          <input id="adj134" type="number" step="0.01" value="1.34" />
-        </div>
-        <div class="multiplier-item">
-          <span>平/休延長時數、假日 11+</span>
-          <input id="adj167" type="number" step="0.01" value="1.67" />
-        </div>
-        <div class="multiplier-item">
-          <span>休息日 8 小時以上</span>
-          <input id="adj267" type="number" step="0.01" value="2.67" />
-        </div>
-      </div>
-      <div class="hint">
-        文字是說明用，真正倍率以右側數字為準，可依公司規則修改。
-      </div>
+  <div class="section">
+    <h3>新增加班</h3>
+    <div class="field-row">
+      <label>日期</label><input id="date" type="date">
     </div>
-
-    <!-- 新增加班 -->
-    <div class="section">
-      <h2>新增加班時段</h2>
-      <div class="field-row">
-        <label for="date">日期：</label>
-        <input id="date" type="date" />
-      </div>
-      <div class="field-row">
-        <label for="startTime">開始時間：</label>
-        <input id="startTime" type="time" value="17:30" />
-      </div>
-      <div class="field-row">
-        <label for="endTime">結束時間：</label>
-        <input id="endTime" type="time" value="19:30" />
-      </div>
-      <div class="field-row">
-        <label></label>
-        <button id="btnPlus2" class="btn-secondary">結束＝開始＋2小時</button>
-      </div>
-      <div class="field-row">
-        <label></label>
-        <button id="btnAdd" class="btn-primary">新增紀錄</button>
-      </div>
-      <div class="hint">
-        ※ 單筆新增：使用上方日期與時間。跨日加班（例如 23:00 ~ 02:00）會自動視為隔日結束。
-      </div>
+    <div class="field-row">
+      <label>開始</label><input id="startTime" type="time">
     </div>
-
-    <!-- 批量新增加班 -->
-    <div class="section">
-      <h2>批量新增加班</h2>
-
-      <div class="bulk-mode-toggle">
-        <label><input type="radio" name="bulkMode" value="range" checked /> 日期區間</label>
-        <label><input type="radio" name="bulkMode" value="pick" /> 勾選日期</label>
-      </div>
-
-      <!-- 區間模式 -->
-      <div id="bulkRangePanel">
-        <div class="field-row">
-          <label for="bulkStartDate">起始日期：</label>
-          <input id="bulkStartDate" type="date" />
-        </div>
-        <div class="field-row">
-          <label for="bulkEndDate">結束日期：</label>
-          <input id="bulkEndDate" type="date" />
-        </div>
-      </div>
-
-      <!-- 勾選日期模式 -->
-      <div id="bulkPickPanel" style="display:none;">
-        <div class="field-row">
-          <label for="bulkMonth">選擇月份：</label>
-          <input id="bulkMonth" type="month" />
-        </div>
-        <div class="calendar" id="pickCalendar"></div>
-        <div class="hint">
-          點選日期可勾選/取消；僅會套用本月份中有效日期。
-        </div>
-      </div>
-
-      <div class="field-row" style="margin-top:6px;">
-        <label for="bulkStartTime">開始時間：</label>
-        <input id="bulkStartTime" type="time" value="17:30" />
-      </div>
-      <div class="field-row">
-        <label for="bulkEndTime">結束時間：</label>
-        <input id="bulkEndTime" type="time" value="19:30" />
-      </div>
-      <div class="field-row">
-        <label></label>
-        <button id="btnBulkAdd" class="btn-secondary">批量新增</button>
-      </div>
-      <div class="hint">
-        ※ 日期區間：對【起始日期 ~ 結束日期】每一天建立一筆。<br />
-        ※ 勾選日期：只對勾選的日期新增。<br />
-        ※ 若某一天與既有紀錄重疊或有錯誤，該天會略過並在訊息中顯示。
-      </div>
+    <div class="field-row">
+      <label>結束</label><input id="endTime" type="time">
     </div>
-
-    <!-- 加班紀錄 -->
-    <div class="section">
-      <h2>加班紀錄</h2>
-      <div id="recordsEmpty" class="hint">尚無紀錄，請先新增。</div>
-      <div class="table-wrapper">
-        <table id="recordsTable" style="display:none;">
-          <thead>
-            <tr>
-              <th>日期</th>
-              <th>類型</th>
-              <th>時間</th>
-              <th class="text-right">時數</th>
-              <th class="text-right">加發金額</th>
-              <th>計算過程</th>
-              <th>操作</th>
-            </tr>
-          </thead>
-          <tbody id="recordsBody"></tbody>
-        </table>
-      </div>
-      <div class="summary" id="summaryRow" style="display:none;">
-        <div>總加班時數：<span id="sumHours">0.00</span> 小時</div>
-        <div>加發合計：<span id="sumPay">0.00</span> 元</div>
-      </div>
-      <div class="field-row" style="margin-top:8px;">
-        <button id="btnDownloadCsv" class="btn-secondary">下載 CSV</button>
-        <button id="btnClearAll" class="btn-danger">刪除全部紀錄</button>
-      </div>
-    </div>
+    <button id="btnAdd">新增</button>
   </div>
 
-  <!-- 編輯紀錄 modal -->
-  <div class="modal-backdrop" id="editModalBackdrop">
-    <div class="modal">
-      <header>編輯加班紀錄</header>
-      <div class="field-row">
-        <label for="editDate">日期：</label>
-        <input id="editDate" type="date" />
-      </div>
-      <div class="field-row">
-        <label for="editStartTime">開始時間：</label>
-        <input id="editStartTime" type="time" />
-      </div>
-      <div class="field-row">
-        <label for="editEndTime">結束時間：</label>
-        <input id="editEndTime" type="time" />
-      </div>
-      <div class="hint" id="editHint"></div>
-      <div class="modal-footer">
-        <button id="btnEditCancel" class="btn-secondary btn-small">取消</button>
-        <button id="btnEditSave" class="btn-primary btn-small">儲存</button>
-      </div>
+  <div class="section">
+    <h3>加班紀錄</h3>
+    <table id="recordsTable">
+      <thead>
+        <tr>
+          <th>日期</th>
+          <th>類型</th>
+          <th>時間</th>
+          <th>時數</th>
+          <th>金額</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="recordsBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 編輯 Modal -->
+<div class="modal-backdrop" id="editModalBackdrop">
+  <div class="modal">
+    <h3>編輯加班</h3>
+
+    <div class="field-row">
+      <label>日期</label><input id="editDate" type="date">
+    </div>
+    <div class="field-row">
+      <label>開始</label><input id="editStartTime" type="time">
+    </div>
+    <div class="field-row">
+      <label>結束</label><input id="editEndTime" type="time">
+    </div>
+
+    <!-- ⭐ 新增：類型可調整 -->
+    <div class="field-row">
+      <label>類型</label>
+      <select id="editDayType">
+        <option value="auto">自動判斷</option>
+        <option value="weekday">平日</option>
+        <option value="restDay">休息日</option>
+        <option value="holiday">假日</option>
+      </select>
+    </div>
+
+    <div style="text-align:right;">
+      <button id="btnEditCancel">取消</button>
+      <button id="btnEditSave">儲存</button>
     </div>
   </div>
+</div>
 
-  <script src="overtimeCore.js"></script>
-  <script src="app.js"></script>
+<script src="overtimeCore.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
